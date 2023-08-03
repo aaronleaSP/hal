@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 from time import sleep
-
+from threading import Thread, Event
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
@@ -27,7 +27,7 @@ def init(key_press_cbk):
     for j in range(4):
         GPIO.setup(ROW[j],GPIO.IN,pull_up_down=GPIO.PUD_UP)
 
-def get_key():
+def get_key(event:Event):
     global cbk_func
 
     #scan keypad
@@ -43,3 +43,5 @@ def get_key():
                     while GPIO.input(ROW[j])==0: #debounce
                         sleep(0.1)
             GPIO.output(COL[i],1) #write back default value of 1
+        if event.is_set():
+            break
